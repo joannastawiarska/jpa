@@ -23,8 +23,8 @@ public abstract class AbstractDao<T, K extends Serializable> implements Dao<T, K
 
     @Override
     public T save(T entity) {
-        entityManager.persist(entity);
-        return entity;
+         entityManager.persist(entity);
+         return entity;
     }
 
     @Override

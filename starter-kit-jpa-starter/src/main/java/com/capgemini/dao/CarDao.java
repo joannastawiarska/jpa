@@ -12,6 +12,6 @@ public interface CarDao extends Dao<CarEntity, Long>{
 	
 	List<CarEntity> findByMakeAndType(String make, String type);
 	
-	List<CarEntity> findByCarer(Long carerId);
+	Set<CarEntity> findByCarer(WorkerEntity carerId);
 	
 }

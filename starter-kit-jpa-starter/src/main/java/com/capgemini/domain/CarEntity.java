@@ -10,7 +10,9 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 @Entity
 @Table(name = "CAR")
@@ -24,6 +26,8 @@ public class CarEntity extends AbstractEntity {
     private String color;
 	@Column(nullable = false, length = 4)
     private int productionYear;
+
+
 	@Column(nullable = false, length = 15)
     private int power;
 	@Column(nullable = false, precision = 3, scale = 1)
@@ -31,14 +35,42 @@ public class CarEntity extends AbstractEntity {
 	@Column(nullable = false, precision = 8, scale = 1)
     private double mileage;
 	
-	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinTable(name = "CARER",
+	//@ManyToMany
+	//@JoinTable(name = "carer",joinColumns = { @JoinColumn(name = "WORKER_ID", nullable = false, updatable = false)},
+	//              inverseJoinColumns = {@JoinColumn(name = "CAR_ID", nullable = false, updatable = false)})
+	//private Set<WorkerEntity> worker;
+	
+	
+	@OneToMany(mappedBy = "car", cascade = CascadeType.ALL, orphanRemoval = true)
+	private Set<RentEntity> rents;
+	
+   @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+   @JoinTable(name = "CARER",
             joinColumns = {@JoinColumn(name = "WORKER_ID", nullable = false, updatable = false)},
             inverseJoinColumns = {@JoinColumn(name = "CAR_ID", nullable = false, updatable = false)}
     )
-    private Set<WorkerEntity> workers = new HashSet<>();
+    private Set<WorkerEntity> worker = new HashSet<>();
 	
-	protected CarEntity(){	
+	public CarEntity(){	
+	}
+	
+	public CarEntity(/*Long id,*/ String type, String make, String color, int productionYear, int power, double engine, double mileage){
+		//this.id = id;
+		this.type = type;
+		this.make = make;
+		this.color = color;
+		this.productionYear = productionYear;
+		this.power = power;
+		this.engine = engine;
+		this.mileage = mileage;
+	}
+
+	public Set<RentEntity> getRents() {
+		return rents;
+	}
+
+	public void setRents(Set<RentEntity> rents) {
+		this.rents = rents;
 	}
 
 	public String getType() {
@@ -49,12 +81,12 @@ public class CarEntity extends AbstractEntity {
 		this.type = type;
 	}
 
-	public Set<WorkerEntity> getWorkers() {
-		return workers;
+	public Set<WorkerEntity> getWorker() {
+		return worker;
 	}
 
-	public void setWorkers(Set<WorkerEntity> workers) {
-		this.workers = workers;
+	public void setWorker(Set<WorkerEntity> workers) {
+		this.worker = workers;
 	}
 
 	public void setEngine(double engine) {
@@ -108,7 +140,11 @@ public class CarEntity extends AbstractEntity {
 	public void setMileage(double mileage) {
 		this.mileage = mileage;
 	}
-	
+	@Override
+	public String toString() {
+		return "CarEntity [type=" + type + ", make=" + make + ", color=" + color + ", productionYear=" + productionYear
+				+ ", power=" + power + ", engine=" + engine + ", mileage=" + mileage + ", worker=" + worker + "]";
+	}
 	
 	
 }

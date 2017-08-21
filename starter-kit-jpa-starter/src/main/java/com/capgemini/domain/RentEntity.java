@@ -4,18 +4,18 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
 import javax.persistence.Index;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
-//import javax.validation.constraints.NotNull;
-//import javax.validation.constraints.Size;
 
 @Entity
 @Table(name = "RENT", indexes = {
-	       @Index(name = "indeks_client", columnList = "client_id"),
-	       @Index(name = "indeks_car", columnList = "car_id")})
+		@Index(name = "indeks_client", columnList = "client_id"),
+		@Index(name = "indeks_car", columnList = "car_id")})
 public class RentEntity extends AbstractEntity {
 	
     @ManyToOne
@@ -26,16 +26,25 @@ public class RentEntity extends AbstractEntity {
     private AgencyEntity agencyFrom;
     @ManyToOne
     private AgencyEntity agencyTo;
-	@Column(nullable = false, columnDefinition = "DATE DEFAULT CURRENT_DATE")
-    private Date dateRent;
 	@Column(nullable = false)
+    private Date dateRent;
+
+	@Column(nullable = false)
+	@Temporal(TemporalType.DATE)
     private Date dateReturn;
 	@Column(nullable = false)
     private float cost;
+	
+	//o.myDate BETWEEN :startDate AND :endDate
 
-	protected RentEntity(){	
+	public RentEntity(){	
 	}
 
+	public RentEntity(Date dateRent, Date dateReturn, float cost) {
+		this.dateRent = dateRent;
+		this.dateReturn = dateReturn;
+		this.cost = cost;
+	}
 	public ClientEntity getClient() {
 		return client;
 	}

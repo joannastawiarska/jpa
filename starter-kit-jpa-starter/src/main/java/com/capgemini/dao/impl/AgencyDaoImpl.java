@@ -15,21 +15,30 @@ import com.capgemini.domain.WorkerEntity;
 public class AgencyDaoImpl extends AbstractDao<AgencyEntity, Long> implements AgencyDao{
 
 	@Override
-	public void addWorker(Long workerId) {
-		// TODO Auto-generated method stub
+	public void addWorkerToAgency(Long agencyId, WorkerEntity worker) {
 		
+		AgencyEntity agency = findOne(agencyId);
+		List<WorkerEntity> workers = agency.getWorkers();
+		workers.add(worker);
+		agency.setWorkers(workers);
+		entityManager.merge(agency);
 	}
 
 	@Override
-	public void deleteWorker(Long workerId) {
-		// TODO Auto-generated method stub
+	public void deleteWorkerFromAgency(Long agencyId, WorkerEntity worker) {
 		
+		AgencyEntity agency = findOne(agencyId);
+		List<WorkerEntity> workers = agency.getWorkers();
+		workers.remove(worker);
+		agency.setWorkers(workers);
+		entityManager.merge(agency);
 	}
 
 	@Override
 	public List<WorkerEntity> findAllWorkers(Long agencyId) {
-		// TODO Auto-generated method stub
-		return null;
+		
+		AgencyEntity agency = findOne(agencyId);
+		return agency.getWorkers();
 	}
 
 	@Override

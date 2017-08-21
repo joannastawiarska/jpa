@@ -68,5 +68,4 @@ public class BookServiceTest {
     	assertEquals(countBefore+1, mSUT.findAllBooks().size());
     }
 
-}
-*/
+}*/

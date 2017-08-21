@@ -17,9 +17,17 @@ public class AddressEntity extends AbstractEntity {
     @Column(nullable = false, length = 25)
     private String region;
     
-    protected AddressEntity() {
+    public AddressEntity() {
     }
-   
+    
+	public AddressEntity(String street, String postCode, String city, String region) {
+		super();
+		this.street = street;
+		this.postCode = postCode;
+		this.city = city;
+		this.region = region;
+	}
+
 	public String getStreet() {
 		return street;
 	}

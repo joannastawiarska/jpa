@@ -1,3 +1,4 @@
+
 insert into address (street, post_code, city, region) values ('Jay', '85743', 'Tucson', 'Arizona');
 insert into address (street, post_code, city, region) values ('Emmet', '77065', 'Houston', 'Texas');
 insert into address (street, post_code, city, region) values ('Gulseth', '92710', 'Irvine', 'California');
@@ -517,6 +518,7 @@ insert into worker (name, surname, date_birth, address_ID, position_ID, agency_I
 insert into worker (name, surname, date_birth, address_ID, position_ID, agency_ID) values ('Karil', 'PAnkett', '1965-01-15', 198, 1, 11);
 insert into worker (name, surname, date_birth, address_ID, position_ID, agency_ID) values ('Irena', 'CAaigg', '1984-04-15', 199, 1, 12);
 insert into worker (name, surname, date_birth, address_ID, position_ID, agency_ID) values ('Devora', 'SAmond', '1982-07-26', 200, 2, 7);
+insert into worker (name, surname, date_birth, address_ID, position_ID, agency_ID) values ('Devora', 'SAmond', '1982-07-26', 200, 2, null);
 
 
 insert into carer (car_ID, worker_ID) values (1, 72);

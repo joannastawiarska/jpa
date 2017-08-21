@@ -10,6 +10,15 @@ public class WorkerPositionEntity extends AbstractEntity {
 
 	@Column(nullable = false, length = 20)
     private String name;
+	
+	public WorkerPositionEntity(){
+		
+	}
+
+	public WorkerPositionEntity(String name) {
+		super();
+		this.name = name;
+	}
 
 	public String getPosition() {
 		return name;

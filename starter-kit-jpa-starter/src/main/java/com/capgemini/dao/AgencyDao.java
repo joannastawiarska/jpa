@@ -7,18 +7,12 @@ import com.capgemini.domain.WorkerEntity;
 
 public interface AgencyDao extends Dao<AgencyEntity, Long> {
 
-	void addWorker(Long workerId);
+	void addWorkerToAgency(Long agencyId, WorkerEntity worker);
 
-	void deleteWorker(Long workerId);
+	void deleteWorkerFromAgency(Long agencyId, WorkerEntity worker);
 
 	List<WorkerEntity> findAllWorkers(Long agencyId);
 
-	List<WorkerEntity> findWorkers(Long agencyId, Long carId); // pracownicy
-																// opiekujacy
-																// sie danym
-																// samochodem
-																// pracujacy w
-																// danej
-																// placowce
+	List<WorkerEntity> findWorkers(Long agencyId, Long carId);
 
 }
