@@ -1,10 +1,12 @@
 package com.capgemini.domain;
 
-import java.util.Date;
+import java.sql.Date;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
@@ -22,14 +24,15 @@ public class WorkerEntity extends AbstractEntity {
     private Date dateBirth;
     @ManyToOne
     private WorkerPositionEntity position;
-
 	@OneToOne
     private AddressEntity address;
-    @ManyToOne 
+    @ManyToOne
     private AgencyEntity agency;
-    
-    @ManyToMany(mappedBy="worker")
+    @ManyToMany(mappedBy="worker", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<CarEntity> car;
+    
+    public WorkerEntity(){
+	}
     
 	public String getName() {
 		return name;
@@ -85,21 +88,6 @@ public class WorkerEntity extends AbstractEntity {
 
 	public void setCar(Set<CarEntity> car) {
 		this.car = car;
-	}
-
-	public WorkerEntity(){
-	}
-	
-	public WorkerEntity(String name, String surname, WorkerPositionEntity position) {
-		this.name = name;
-		this.surname = surname;
-		this.position = position;
-	}
-	
-    @Override
-	public String toString() {
-		return "WorkerEntity [name=" + name + ", surname=" + surname + ", dateBirth=" + dateBirth + ", position="
-				+ position + ", address=" + address + ", agency=" + agency + ", car=" + car + "]";
 	}
 
 }

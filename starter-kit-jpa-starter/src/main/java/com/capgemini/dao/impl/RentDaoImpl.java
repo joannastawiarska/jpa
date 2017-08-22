@@ -10,5 +10,5 @@ import com.capgemini.domain.RentEntity;
 @Transactional(Transactional.TxType.SUPPORTS)
 @Repository
 public class RentDaoImpl extends AbstractDao<RentEntity, Long> implements RentDao {
-
+	
 }

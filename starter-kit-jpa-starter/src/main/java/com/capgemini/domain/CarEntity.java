@@ -12,7 +12,6 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
 
 @Entity
 @Table(name = "CAR")
@@ -26,29 +25,20 @@ public class CarEntity extends AbstractEntity {
     private String color;
 	@Column(nullable = false, length = 4)
     private int productionYear;
-
-
 	@Column(nullable = false, length = 15)
     private int power;
 	@Column(nullable = false, precision = 3, scale = 1)
     private double engine;
 	@Column(nullable = false, precision = 8, scale = 1)
     private double mileage;
-	
-	//@ManyToMany
-	//@JoinTable(name = "carer",joinColumns = { @JoinColumn(name = "WORKER_ID", nullable = false, updatable = false)},
-	//              inverseJoinColumns = {@JoinColumn(name = "CAR_ID", nullable = false, updatable = false)})
-	//private Set<WorkerEntity> worker;
-	
-	
+		
 	@OneToMany(mappedBy = "car", cascade = CascadeType.ALL, orphanRemoval = true)
 	private Set<RentEntity> rents;
 	
-   @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-   @JoinTable(name = "CARER",
-            joinColumns = {@JoinColumn(name = "WORKER_ID", nullable = false, updatable = false)},
-            inverseJoinColumns = {@JoinColumn(name = "CAR_ID", nullable = false, updatable = false)}
-    )
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinTable(name = "CARER",
+            joinColumns = {@JoinColumn(name = "CAR_ID", nullable = false, updatable = false)},
+            inverseJoinColumns = {@JoinColumn(name = "WORKER_ID", nullable = false, updatable = false)})
     private Set<WorkerEntity> worker = new HashSet<>();
 	
 	public CarEntity(){	

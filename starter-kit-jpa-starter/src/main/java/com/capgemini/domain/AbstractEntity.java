@@ -16,25 +16,17 @@ public abstract class AbstractEntity {
 
 	@Id
 	@GeneratedValue
-	@Column(columnDefinition = "INT(10)")
+	@Column
 	protected Long id;
 	
 	@Version
 	@Column(columnDefinition="int default '1'")
 	private long version;
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
 	
 	private Timestamp entityDateUpdate;
 	private Timestamp entityDateCreate;
 
-	@Column(name = "UPDATE_TS", insertable = false, updatable = true)
+	@Column(name = "UPDATE_DATE", insertable = false, updatable = true)
 	public Timestamp getEntityDateUpdate() {
 		return entityDateUpdate;
 	}
@@ -64,6 +56,14 @@ public abstract class AbstractEntity {
 	
 	public long getVersion() {
 		return version;
+	}
+	
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
 	}
 	
 }

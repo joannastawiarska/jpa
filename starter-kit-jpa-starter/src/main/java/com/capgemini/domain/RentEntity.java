@@ -1,16 +1,13 @@
 package com.capgemini.domain;
 
-import java.util.Date;
+import java.sql.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Index;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-
 
 @Entity
 @Table(name = "RENT", indexes = {
@@ -18,33 +15,24 @@ import javax.persistence.TemporalType;
 		@Index(name = "indeks_car", columnList = "car_id")})
 public class RentEntity extends AbstractEntity {
 	
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private ClientEntity client;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private CarEntity car;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private AgencyEntity agencyFrom;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private AgencyEntity agencyTo;
 	@Column(nullable = false)
     private Date dateRent;
-
 	@Column(nullable = false)
-	@Temporal(TemporalType.DATE)
     private Date dateReturn;
 	@Column(nullable = false)
     private float cost;
-	
-	//o.myDate BETWEEN :startDate AND :endDate
 
 	public RentEntity(){	
 	}
-
-	public RentEntity(Date dateRent, Date dateReturn, float cost) {
-		this.dateRent = dateRent;
-		this.dateReturn = dateReturn;
-		this.cost = cost;
-	}
+	
 	public ClientEntity getClient() {
 		return client;
 	}
@@ -99,8 +87,6 @@ public class RentEntity extends AbstractEntity {
 
 	public void setCost(int cost) {
 		this.cost = cost;
-	}
-	
-	
+	}	
 	
 }

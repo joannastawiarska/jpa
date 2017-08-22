@@ -2,19 +2,16 @@ package com.capgemini.service;
 
 import static org.junit.Assert.*;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
-
 import javax.transaction.Transactional;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import com.capgemini.dao.CarDao;
+import com.capgemini.dao.RentDao;
 import com.capgemini.domain.CarEntity;
 import com.capgemini.domain.RentEntity;
 
@@ -24,46 +21,38 @@ import com.capgemini.domain.RentEntity;
 public class DeleteChildRowTest {
 	
 	@Autowired
-	private CarService carService;
+	private CarDao carDao;
 	
 	@Autowired
-	private RentService rentService;
-	
-	private CarEntity car;
-	private RentEntity rentFirst;
-	private RentEntity rentSecond;
-	
-	@Before
-	public void setUp(){	
+	private RentDao rentDao;
 		
-		car = new CarEntity("Mercedes", "A", "black", 2000, 300, 3004, 40000);	
-		Set<RentEntity> rents = new HashSet<RentEntity>();
-		rentFirst = new RentEntity(new Date(),new Date(),50);
-		rentSecond = new RentEntity(new Date(),new Date(),100);
-		
-		rentService.save(rentFirst);
-		rentService.save(rentSecond);	
-		
-		rents.add(rentFirst);
-		rents.add(rentSecond);
-		car.setRents(rents);
-		
-		carService.save(car);		
-	}
-
 	@Test
-	public void testShouldRemoveChildRowsOfCar() {
+	public void testShouldRemoveOneChildRowsOfCar() {
+        
+		//given
+		RentEntity rent = rentDao.findOne(3L);
+		CarEntity car = carDao.findOne(86L);
+		//when
+		carDao.delete(car);
+		//then
+		assertNull(rentDao.findOne(3L));
+		assertNotNull(rent);
+	}
+	
+	@Test
+	public void testShouldRemoveTwoChildRowsOfCar() {
 		
         //given
-		assertNotNull(rentService.findOne(rentFirst.getId()));
-		assertNotNull(rentService.findOne(rentSecond.getId()));
-		
+		RentEntity rentFirst = rentDao.findOne(9L);
+		RentEntity rentSecond = rentDao.findOne(61L);
+		CarEntity car = carDao.findOne(8L);
 		//when
-		carService.delete(car);
-		
+		carDao.delete(car);
 		//then
-		assertNull(rentService.findOne(rentFirst.getId()));
-		assertNull(rentService.findOne(rentSecond.getId()));
+		assertNotNull(rentFirst);
+		assertNotNull(rentSecond);
+		assertNull(rentDao.findOne(9L));
+		assertNull(rentDao.findOne(61L));
 	}
 
 }

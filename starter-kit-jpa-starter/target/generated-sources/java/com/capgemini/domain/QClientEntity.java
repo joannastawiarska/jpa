@@ -28,7 +28,7 @@ public class QClientEntity extends EntityPathBase<ClientEntity> {
 
     public final StringPath cardNumber = createString("cardNumber");
 
-    public final DateTimePath<java.util.Date> dateBirth = createDateTime("dateBirth", java.util.Date.class);
+    public final DatePath<java.sql.Date> dateBirth = createDate("dateBirth", java.sql.Date.class);
 
     public final StringPath email = createString("email");
 

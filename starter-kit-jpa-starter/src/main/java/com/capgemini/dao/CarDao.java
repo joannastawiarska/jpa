@@ -1,5 +1,6 @@
 package com.capgemini.dao;
 
+import java.sql.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -13,5 +14,9 @@ public interface CarDao extends Dao<CarEntity, Long>{
 	List<CarEntity> findByMakeAndType(String make, String type);
 	
 	Set<CarEntity> findByCarer(WorkerEntity carerId);
+	
+	List<CarEntity> getCarsRentMoreThanSix();
+	
+	Long findCarsRentedOnDate(Date firstDate, Date secondDate);
 	
 }

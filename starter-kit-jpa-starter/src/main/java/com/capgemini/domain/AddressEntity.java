@@ -19,14 +19,6 @@ public class AddressEntity extends AbstractEntity {
     
     public AddressEntity() {
     }
-    
-	public AddressEntity(String street, String postCode, String city, String region) {
-		super();
-		this.street = street;
-		this.postCode = postCode;
-		this.city = city;
-		this.region = region;
-	}
 
 	public String getStreet() {
 		return street;

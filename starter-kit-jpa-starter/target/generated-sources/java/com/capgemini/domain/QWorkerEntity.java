@@ -30,7 +30,7 @@ public class QWorkerEntity extends EntityPathBase<WorkerEntity> {
 
     public final SetPath<CarEntity, QCarEntity> car = this.<CarEntity, QCarEntity>createSet("car", CarEntity.class, QCarEntity.class, PathInits.DIRECT2);
 
-    public final DateTimePath<java.util.Date> dateBirth = createDateTime("dateBirth", java.util.Date.class);
+    public final DatePath<java.sql.Date> dateBirth = createDate("dateBirth", java.sql.Date.class);
 
     //inherited
     public final DateTimePath<java.sql.Timestamp> entityDateCreate = _super.entityDateCreate;

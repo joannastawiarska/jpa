@@ -1,5 +1,6 @@
 package com.capgemini.dao.impl;
 
+import java.sql.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -11,7 +12,11 @@ import org.springframework.stereotype.Repository;
 
 import com.capgemini.dao.CarDao;
 import com.capgemini.domain.CarEntity;
+import com.capgemini.domain.QCarEntity;
+import com.capgemini.domain.QRentEntity;
+import com.capgemini.domain.RentEntity;
 import com.capgemini.domain.WorkerEntity;
+import com.querydsl.jpa.impl.JPAQuery;
 
 @Transactional(Transactional.TxType.SUPPORTS)
 @Repository
@@ -31,14 +36,10 @@ public class CarDaoImpl extends AbstractDao<CarEntity, Long> implements CarDao{
 	@Override
 	public Set<CarEntity> findByCarer(WorkerEntity worker){
 		
-		//TypedQuery<CarEntity> query = entityManager.createQuery(
-               // "select c from WorkerEntity as w join w.car as c where w.id = :id", CarEntity.class);
 		TypedQuery<CarEntity> query = entityManager.createQuery(
-        "select car from CarEntity car where :worker MEMBER OF car.worker", CarEntity.class);
-        //query.setParameter("id", worker.getId());
+				"select car from CarEntity car where :worker MEMBER OF car.worker", CarEntity.class);
 		query.setParameter("worker", worker);
-        return new HashSet<CarEntity>(query.getResultList());
-        
+        return new HashSet<CarEntity>(query.getResultList());   
 	} 
 	
 	@Override
@@ -47,9 +48,25 @@ public class CarDaoImpl extends AbstractDao<CarEntity, Long> implements CarDao{
 		CarEntity car = findOne(carId);
 		car.setWorker(workers);
 		return entityManager.merge(car);
-
 	  }
+	
+	@Override
+	public List<CarEntity> getCarsRentMoreThanSix(){
+		
+		QCarEntity car = QCarEntity.carEntity;
+		JPAQuery<CarEntity> query = new JPAQuery<CarEntity>(entityManager).from(car);
+		return query.from(car).where(car.rents.size().gt(6)).fetch();
 		
 	}
+	
+	@Override
+	public Long findCarsRentedOnDate(Date firstDate, Date secondDate) {
+
+		QRentEntity rent = QRentEntity.rentEntity;
+		JPAQuery<RentEntity> query = new JPAQuery<RentEntity>(entityManager).from(rent);
+		long amount = query.where(rent.dateRent.before(secondDate).and(rent.dateRent.after(firstDate))).fetchCount();
+		return amount;
+	}
+}
 	
 	

@@ -1,13 +1,17 @@
  package com.capgemini.dao.impl;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 
 import org.springframework.stereotype.Repository;
 
 import com.capgemini.dao.AgencyDao;
 import com.capgemini.domain.AgencyEntity;
+import com.capgemini.domain.CarEntity;
 import com.capgemini.domain.WorkerEntity;
 
 @Transactional(Transactional.TxType.SUPPORTS)
@@ -41,10 +45,18 @@ public class AgencyDaoImpl extends AbstractDao<AgencyEntity, Long> implements Ag
 		return agency.getWorkers();
 	}
 
+
 	@Override
-	public List<WorkerEntity> findWorkers(Long agencyId, Long carId) {
-		// TODO Auto-generated method stub
-		return null;
+	public Set<WorkerEntity> findWorkers(AgencyEntity agency, CarEntity car) {
+
+		TypedQuery<WorkerEntity> query = entityManager.createQuery(
+				"select worker from WorkerEntity worker where :agency = worker.agency and :car MEMBER OF worker.car",
+				WorkerEntity.class);
+		query.setParameter("agency", agency);
+		query.setParameter("car", car);
+
+		return new HashSet<WorkerEntity>(query.getResultList());
+
 	}
 
 }

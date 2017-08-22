@@ -34,9 +34,9 @@ public class QRentEntity extends EntityPathBase<RentEntity> {
 
     public final NumberPath<Float> cost = createNumber("cost", Float.class);
 
-    public final DateTimePath<java.util.Date> dateRent = createDateTime("dateRent", java.util.Date.class);
+    public final DatePath<java.sql.Date> dateRent = createDate("dateRent", java.sql.Date.class);
 
-    public final DatePath<java.util.Date> dateReturn = createDate("dateReturn", java.util.Date.class);
+    public final DatePath<java.sql.Date> dateReturn = createDate("dateReturn", java.sql.Date.class);
 
     //inherited
     public final DateTimePath<java.sql.Timestamp> entityDateCreate = _super.entityDateCreate;

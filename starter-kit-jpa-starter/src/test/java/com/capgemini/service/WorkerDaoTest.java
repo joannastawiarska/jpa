@@ -2,22 +2,22 @@ package com.capgemini.service;
 
 import static org.junit.Assert.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.transaction.Transactional;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import com.capgemini.domain.AgencyEntity;
+import com.capgemini.dao.AgencyDao;
+import com.capgemini.dao.CarDao;
+import com.capgemini.dao.WorkerDao;
+import com.capgemini.dao.WorkerPositionDao;
 import com.capgemini.domain.WorkerEntity;
-import com.capgemini.domain.WorkerPositionEntity;
+import com.capgemini.model.EmployeeSearchCriteria;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -25,51 +25,108 @@ import com.capgemini.domain.WorkerPositionEntity;
 public class WorkerDaoTest {
 	
 	@Autowired
-	AgencyService agencyService;
+	AgencyDao agencyDao;
+	
+	@Autowired
+	WorkerDao workerDao;
 	
 	@Autowired 
-	WorkerService workerService;
+	CarDao carDao;
+	
+	@Autowired
+	WorkerPositionDao workerPosition;
 
-	private List<WorkerEntity> workers2 = new ArrayList<WorkerEntity>();
-	private WorkerEntity worker3;
-	private WorkerEntity worker4;
-	private AgencyEntity agencyEntity2;
-	
-	@Before
-	public void setUp(){
-		
-		worker3 = new WorkerEntity("Mark", "Doe", new WorkerPositionEntity("seller"));
-		worker4 = new WorkerEntity("John", "Smith", new WorkerPositionEntity("manager"));
-
-		workerService.save(worker3);
-		workerService.save(worker4);
-		workers2.add(worker3);
-		workers2.add(worker4);
-
-		
-		agencyEntity2 = new AgencyEntity("344454", "agency2@xxx.com", workers2);
-		agencyService.save(agencyEntity2);
-	}
-	
-	 @After
-	 public void tearDown() throws Exception {
-		 agencyService.delete(agencyEntity2); 
-	}
-	 
-	 @Test
-		public void test() {
-
-			List<WorkerEntity> workersActual = workerService.findWorkersAgency(agencyEntity2);
-			
-			assertTrue(workersActual.contains(worker3));
-			assertTrue(workersActual.contains(worker4));
-		}
-		
-	}
-	
-	
-	 //private AgencyEntity getLastAgency(){
-	//	 agencies = agencyService.findAll();
-	//	 return agencies.get(agencies.size()-1);		 
-	// }
-	
+     @Test 
+     public void testSearchWorkersByOneCriteria(){
+    	 
+    	 //given
+    	 EmployeeSearchCriteria criteria = new EmployeeSearchCriteria();
+    	 criteria.setAgencyId(1L);
+    	 //when
+    	 List<WorkerEntity> workers =  workerDao.searchWorkersByCriteria(criteria);
+    	 //then
+    	 //agencja id = 1 ma pieciu pracownikow
+    	 assertEquals(5, workers.size());
+    	 
+     }
+     
+     @Test
+     public void testSearchWorkersByTwoCriteria(){
+    	 
+    	 //given
+    	 WorkerEntity worker = workerDao.findOne(20L);
+    	 EmployeeSearchCriteria criteria = new EmployeeSearchCriteria();
+    	 criteria.setAgencyId(1L);
+    	 criteria.setCarId(17L);
+    	 //when
+    	 List<WorkerEntity> workers =  workerDao.searchWorkersByCriteria(criteria);
+    	 //then
+    	 //pracownik z id = 20 pracuje w agencji id = 1 i opiekuje sie samochodem id = 17
+    	 assertEquals(1, workers.size());
+    	 assertEquals(worker, workers.get(0));
+    	 
+     }
+     
+     @Test
+     public void testSearchWorkersByThreeCriteria(){
+    	 
+    	 //given
+    	 WorkerEntity worker = workerDao.findOne(5L);
+    	 EmployeeSearchCriteria criteria = new EmployeeSearchCriteria();
+    	 criteria.setAgencyId(6L);
+    	 criteria.setCarId(36L);
+    	 criteria.setPositionId(3L);
+    	 //when
+    	 List<WorkerEntity> workers =  workerDao.searchWorkersByCriteria(criteria);
+    	 //then
+    	 //pracownik z id = 5 pracuje w placowce id = 6, opiekuje sie samochodem id = 36, pracuje na pozycji 3 (accountant)
+    	 assertEquals(1, workers.size());
+    	 assertEquals(worker, workers.get(0));
+     }
+     
+     @Test
+     public void testSearchWorkersByAgency(){
+    	 
+    	 //given
+    	 EmployeeSearchCriteria criteria = new EmployeeSearchCriteria();
+    	 criteria.setAgencyId(10L);
+    	 //when
+    	 List<WorkerEntity> workers =  workerDao.searchWorkersByCriteria(criteria);
+    	 //w placowce id = 10 pracuja 3 osoby
+    	 //then
+    	 assertEquals(3, workers.size());
+    	 assertTrue(workers.contains(workerDao.findOne(4L)));
+    	 assertTrue(workers.contains(workerDao.findOne(84L)));
+    	 assertTrue(workers.contains(workerDao.findOne(95L)));
+     }
+     
+     @Test
+     public void testSearchWorkersByCar(){
+    	 
+    	 //given
+    	 WorkerEntity worker = workerDao.findOne(20L);
+    	 EmployeeSearchCriteria criteria = new EmployeeSearchCriteria();
+    	 criteria.setAgencyId(1L);
+    	 criteria.setCarId(17L);
+    	 //when
+    	 List<WorkerEntity> workers =  workerDao.searchWorkersByCriteria(criteria);
+    	 //then
+    	 //pracownik z id = 20 pracuje w agencji id = 1 i opiekuje sie samochodem id = 17
+    	 assertEquals(1, workers.size());
+    	 assertEquals(worker, workers.get(0)); 
+     }
+     
+     @Test
+     public void testSearchWorkersByPosition(){
+    	 
+    	 //given
+    	 EmployeeSearchCriteria criteria = new EmployeeSearchCriteria();
+    	 criteria.setPositionId(3L);
+    	 //when
+    	 List<WorkerEntity> workers =  workerDao.searchWorkersByCriteria(criteria);
+    	 //then
+    	 //pracownik z id = 20 pracuje w agencji id = 1 i opiekuje sie samochodem id = 17
+    	 assertEquals(36, workers.size());
+     }
+     
+  }

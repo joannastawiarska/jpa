@@ -25,11 +25,6 @@ public class AgencyEntity extends AbstractEntity {
 	public AgencyEntity(){	
 	}
     
-	public AgencyEntity(String phoneNumber, String email, List<WorkerEntity> workers){
-		this.phoneNumber = phoneNumber;
-		this.email = email;
-		this.workers = workers;
-	}
 	public List<WorkerEntity> getWorkers() {
 		return workers;
 	}

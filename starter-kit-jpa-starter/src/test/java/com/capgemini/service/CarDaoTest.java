@@ -2,19 +2,20 @@ package com.capgemini.service;
 
 import static org.junit.Assert.*;
 
+import java.sql.Date;
 import java.time.LocalDateTime;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 
-import org.junit.Before;
-import org.junit.Ignore;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.capgemini.dao.CarDao;
@@ -32,47 +33,47 @@ public class CarDaoTest {
 	
 	@Autowired
 	private WorkerDao workerDao;
-	
-	private CarEntity carEntity;
-	
-	
-	@Before
-	public void setUp(){
-		carEntity = new CarEntity("Mercedes", "A", "black", 2000, 300, 3004, 40000);
-		carDao.save(carEntity);
-	}
+
+	@Autowired
+	EntityManager entityManager;
 	
 	@Test
 	public void testDatabaseShouldNotBeEmpty(){
-		List<CarEntity> cars;
-		cars = carDao.findAll();
-		assertTrue(0 != cars.size());
-		
+		carDao.findAll();
 	}
+	@Test
+	public void testShouldgetCarsRentMoreThanThree(){
+		
+		//given
+		CarEntity carEntity = carDao.findOne(17L);
+		//when
+		List<CarEntity> result = carDao.getCarsRentMoreThanSix();
+		//then
+		assertTrue(result.contains(carEntity));
+	}
+
 	
 	@Test
-	public void testShouldFindByCarerr(){
-		Set<CarEntity> cars;
+	public void testShouldFindByCarer(){
+		
 		//given
 		WorkerEntity worker = workerDao.findOne(3L);
-		System.out.println(worker.getName()+ "aaaaaaaaaaaaaaaaaaaaaaa");
 		//when
-		cars = carDao.findByCarer(worker);
+		Set<CarEntity> cars = carDao.findByCarer(worker);
 		//then
-		for(CarEntity car:cars)
-		         System.out.println(car.getId()+ "             " + car.getProductionYear()+"hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh");
 		assertEquals(2, cars.size());
-		
+		assertTrue(cars.contains(carDao.findOne(78L)));
+		assertTrue(cars.contains(carDao.findOne(96L)));
 	}
 	
 	@Test
 	public void testShouldFindByMakeAndType(){
-		List<CarEntity> cars;
+
 		//given
 		String make = "Lexus";
 		String type = "GS";
 		//when
-		 cars = carDao.findByMakeAndType(make, type);
+		List<CarEntity> cars = carDao.findByMakeAndType(make, type);
 		//then
 		assertNotNull(cars);
 		assertEquals("Lexus", cars.get(0).getMake());
@@ -81,10 +82,10 @@ public class CarDaoTest {
 	
 	@Test
 	public void testShouldTestSaveCar(){
+		
 		//given
 		CarEntity carEnt = new CarEntity("Mercedes", "S", "silver", 2000, 300, 3004, 40000);
 		int sizeExpected = (carDao.findAll()).size() + 1;
-		
 		//when
 		carDao.save(carEnt);
 		int sizeActual = carDao.findAll().size();
@@ -93,108 +94,95 @@ public class CarDaoTest {
 		assertEquals(sizeExpected, sizeActual);
 		
 	}
-	
-	 @Ignore
-	 @Test
-	 public void testShouldUpdateCar(){
-		 List<CarEntity> cars;
-		 //given
-		 CarEntity lastCar = getLastCar();
-		 lastCar.setColor("funnyPinky");
-		 lastCar.setMileage(200000);
-		 
-		 //when 
-		 carDao.update(lastCar);
-		 
-		 //then
-		 cars = carDao.findAll();
-		 assertEquals("funnyPinky", cars.get(cars.size()-1).getColor());
-		 assertEquals((int)200000,(int)cars.get(cars.size()-1).getMileage()); 
-	 }
 	 
 	 @Test
 	  public void testShouldDeleteLastCar(){
+		 
 		 //given
-		 CarEntity lastCar = getLastCar();
-		 long lastIndex = lastCar.getId();
-		 
+		 CarEntity car = carDao.findOne(20L);
 		 //when
-		 carDao.delete(lastCar);
-		 
+		 carDao.delete(car);
 		 //then
-		 assertNull(carDao.findOne(lastIndex));
+		 assertNull(carDao.findOne(20L));
 	 }
 	 
 	 @Test
 	 public void testShouldUpdateCarerOfCar(){
+		 
 		 //given
-		 WorkerEntity worker = new WorkerEntity("William","Hills",null);
-		 workerDao.save(worker);
-		
-		 Set<WorkerEntity> carers = new HashSet<WorkerEntity>();
+		 WorkerEntity worker = workerDao.findOne(9L);
+		 CarEntity car = carDao.findOne(15L);
+		 Set<WorkerEntity> carers = carDao.findOne(15L).getWorker();
 		 carers.add(worker);
-		 
 		 //when
-		 carDao.updateCarer(carers, carEntity.getId());
-		 
+		 carDao.updateCarer(carers, car.getId());
 		 //then
-		 assertTrue(carEntity.getWorker().contains(worker));
-		 assertTrue(1 == carEntity.getWorker().size());
+		 assertTrue(carDao.findOne(15L).getWorker().contains(worker));
+		 assertEquals(3, carDao.findOne(15L).getWorker().size());
 	 }
 	 
-	 private CarEntity getLastCar(){
-		 List<CarEntity> cars;
-		 cars = carDao.findAll();
-		 return cars.get(cars.size()-1);		 
-	 }
-	 
-	 @Test 
+	 @Test(expected = ObjectOptimisticLockingFailureException.class)
 	 public void testShouldIncrementEntityVersion(){
-		 //given
-		 CarEntity lastCar = getLastCar();
-		 long version = lastCar.getVersion();
 		 
-		 //when
-		 lastCar.setColor("newColor");
-		 carDao.update(lastCar);
-		 
-		 //then
-		 assertEquals(version + 1, getLastCar().getVersion());
+		//given
+		CarEntity car = carDao.findOne(1L);
+		CarEntity carTwo = carDao.findOne(1L);
+		car.setProductionYear(1995);
+		carTwo.setProductionYear(2000);
+		//when
+		entityManager.detach(car);
+		entityManager.detach(carTwo);
+		//then
+		carDao.update(car);
+		entityManager.flush();
+		carDao.update(carTwo);
 	 }
+	 
+	 @Test
+	 public void shouldReturnAmountOfCarsWithRentDateBetween() {
+
+		//when
+		long amount = carDao.findCarsRentedOnDate(Date.valueOf("2017-01-05"), Date.valueOf("2017-12-01"));
+		//then
+		assertEquals(11L, amount);
+	}
 	 
 	 @Test
 	 public void testShouldSetCorrectCreationDate(){
 		 
 		 //given
 		 LocalDateTime now = LocalDateTime.now();
+		 CarEntity createCar = new CarEntity("Opel", "Astra", "silver", 3000, 3000, 2004, 40000);
+		 //when
+		 carDao.save(createCar);
 		 
 		 //then
-		 validateCreationDate(getLastCarCreationDate(), now);
+		 validateCreationDate(getCreationDate(createCar), now);
 	 }
 	 
 	 @Test
 	 public void testShouldUpdateDate(){
 		 
 		 //given
-		 CarEntity lastCar = getLastCar();
+		 CarEntity carEntity = new CarEntity("Mazda", "A", "black", 2000, 300, 3004, 40000); 
+		 carDao.save(carEntity);
 		 LocalDateTime now = LocalDateTime.now();
-		 
 		 //when
-		 lastCar.setMake("Opel");
-		 carDao.update(lastCar);
-		 
+		 carEntity.setMake("Opel");
+		 CarEntity carEntityy = carDao.update(carEntity);
+		 carDao.findAll();
 		 //then
-		 validateCreationDate(getLastCarUpdateDate(), now);
-		 assertTrue(0 != getLastCarCreationDate().compareTo(getLastCarUpdateDate()));
+		 validateCreationDate(getUpdateDate(carEntity), now);
+		 assertTrue(0 != getCreationDate(carEntity).compareTo(getUpdateDate(carEntityy)));
 		 
 	 }
 	 
-	 private LocalDateTime getLastCarCreationDate(){
-		 return getLastCar().getEntityDateCreate().toLocalDateTime();
+	 private LocalDateTime getCreationDate(CarEntity car){
+		 return car.getEntityDateCreate().toLocalDateTime();
 	 }
 	 
-	 private LocalDateTime getLastCarUpdateDate(){
-		 return getLastCar().getEntityDateUpdate().toLocalDateTime();
+	 private LocalDateTime getUpdateDate(CarEntity car){
+		 return car.getEntityDateUpdate().toLocalDateTime();
 	 }
 	 
 	 private void validateCreationDate(LocalDateTime creationDate, LocalDateTime nowDate){
@@ -204,4 +192,5 @@ public class CarDaoTest {
 		 assertEquals(creationDate.getHour(),nowDate.getHour());
 		 assertEquals(creationDate.getSecond(),nowDate.getSecond());
 	 }
+	
 }

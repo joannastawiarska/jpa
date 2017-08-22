@@ -15,11 +15,6 @@ public class WorkerPositionEntity extends AbstractEntity {
 		
 	}
 
-	public WorkerPositionEntity(String name) {
-		super();
-		this.name = name;
-	}
-
 	public String getPosition() {
 		return name;
 	}

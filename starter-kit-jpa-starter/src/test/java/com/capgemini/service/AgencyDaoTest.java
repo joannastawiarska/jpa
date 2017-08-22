@@ -2,13 +2,11 @@ package com.capgemini.service;
 
 import static org.junit.Assert.*;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.transaction.Transactional;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,10 +14,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.capgemini.dao.AgencyDao;
+import com.capgemini.dao.CarDao;
 import com.capgemini.dao.WorkerDao;
 import com.capgemini.domain.AgencyEntity;
+import com.capgemini.domain.CarEntity;
 import com.capgemini.domain.WorkerEntity;
-import com.capgemini.domain.WorkerPositionEntity;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -31,30 +30,9 @@ public class AgencyDaoTest {
 	
 	@Autowired
 	WorkerDao workerDao;
-
-	private List<WorkerEntity> workers = new ArrayList<WorkerEntity>();
-	private WorkerEntity worker;
-	private WorkerEntity worker2;
-	private AgencyEntity agencyEntity;
 	
-	@Before
-	public void setUp(){
-		
-		//worker = new WorkerEntity("John", "Doe", new WorkerPositionEntity("seller"));
-		//worker2 = new WorkerEntity("Alice", "Smith", new WorkerPositionEntity("manager"));
-		///workerDao.save(worker);
-		//workerDao.save(worker2);
-		//workers.add(worker);
-		//workers.add(worker2);
-		
-		//agencyEntity = new AgencyEntity("34454545", "agency@ccc.com", workers);
-		//agencyDao.save(agencyEntity);
-	}
-	
-	 //@After
-	 //public void tearDown() throws Exception {
-		// agencyDao.delete(agencyEntity); 
-	//}
+	@Autowired 
+	CarDao carDao;
 	 
 	@Test
 	public void testShouldAddWorkerToAgency() {
@@ -68,7 +46,6 @@ public class AgencyDaoTest {
 		int workersSizeAfter = agencyEntity.getWorkers().size();
 		//then
 		assertEquals(workersSizeAfter, workersSizeBefore + 1);
-		
 	}
 	
 	@Test
@@ -78,14 +55,11 @@ public class AgencyDaoTest {
 		AgencyEntity agencyEntity = agencyDao.findOne(6L);
 		int workersSizeBefore = agencyEntity.getWorkers().size();
 		//when
-		System.out.println(agencyEntity.getId() + "aaaaaaaaaaaaaaaaaaaaaaaaaa");
 		agencyDao.deleteWorkerFromAgency(agencyEntity.getId(), workerDao.findOne(10L));
 		int workersSizeAfter = agencyEntity.getWorkers().size();
 		//then
 		assertEquals(workersSizeAfter, workersSizeBefore - 1);
-		
 	}
-
 	
 	@Test
 	public void testShouldFindAllWorkers(){
@@ -96,7 +70,6 @@ public class AgencyDaoTest {
 		List <WorkerEntity> list = agencyDao.findAllWorkers(agencyEntity.getId());
 		//then 
 		assertEquals(7, list.size());
-		
 	}
 
 	@Test
@@ -106,25 +79,38 @@ public class AgencyDaoTest {
 		AgencyEntity agencyEntity = agencyDao.findOne(10L);
 		agencyEntity.setEmail("agency@xxx.com");
 		//when
-		//agencyService.update(agencyEntity);
+		agencyDao.update(agencyEntity);
 		//then
-		assertEquals("agency@xxx.com", agencyDao.findOne(agencyEntity.getId()).getEmail());
+		assertEquals("agency@xxx.com", agencyDao.findOne(10L).getEmail());
+	}  
+	
+	@Test
+	public void testShouldDeleteAgency(){
 		
+		//given
+		AgencyEntity agencyEntity = agencyDao.findOne(15L);
+		//when
+		agencyDao.delete(15L);
+		//then
+		assertNotNull(agencyEntity);
+		assertNull(agencyDao.findOne(15L));
 	}
 	
-	//@Test
-	//public void test() {
-//
-	//	List<WorkerEntity> workersActual = workerDao.findWorkersAgency(agencyEntity);
-	//	
-	//	assertTrue(workersActual.contains(worker));
-	//	assertTrue(workersActual.contains(worker2));
-	//}
-	//
-	
-	 //private AgencyEntity getLastAgency(){
-	//	 agencies = agencyService.findAll();
-	//	 return agencies.get(agencies.size()-1);		 
-	// }
+	@Test
+	public void testShouldFindWorkerByAgencyAndCar() {
+		
+		//given
+		AgencyEntity agency = agencyDao.findOne(10L);
+		CarEntity car = carDao.findOne(7L);
+		Long id = null;
+		///when
+		Set<WorkerEntity> worker = agencyDao.findWorkers(agency, car);
+
+		for (WorkerEntity w : worker) {
+			id = w.getId();
+		}
+		//then
+		assertTrue(id.equals(4L));
+	}
 	
 }
